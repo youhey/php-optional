@@ -1,0 +1,27 @@
+{
+    "name": "youhey/php-optional",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "IKEDA Youhei",
+            "email": "youhey.ikeda@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "PhpOptional\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "PhpOptional\\Test\\": "tests"
+        }
+    }
+}
