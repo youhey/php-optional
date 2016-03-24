@@ -239,44 +239,6 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
     // }}}
 
-    // {{{
-
-    /**
-     * @test
-     */
-    public function ifPresent()
-    {
-        $optional_int = Optional::of(42);
-
-        $result = null;
-
-        $this->assertEquals(84, $optional_int->ifPresent(function () use (&$result) {
-            $result = ($this->value * 2);
-            return $result;
-        }));
-
-        $this->assertEquals(84, $result);
-    }
-
-    /**
-     * @test
-     */
-    public function ifPresentTheEmptyValue()
-    {
-        $empty_optional = Optional::void();
-
-        $result = null;
-
-        $this->assertNull($empty_optional->ifPresent(function () use (&$result) {
-            $result = 'called';
-            return $result;
-        }));
-
-        $this->assertNull($result);
-    }
-
-    // }}}
-
     // provider {{{
 
     public static function basicValuesProvider()
