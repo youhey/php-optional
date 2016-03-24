@@ -58,7 +58,7 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     public function ofNullableTheNullValue()
     {
         $optional = Optional::ofNullable(null);
-        $this->assertTrue($optional->isPresent());
+        $this->assertFalse($optional->isPresent());
         $this->assertTrue($optional->equals(null));
     }
 
@@ -72,7 +72,7 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     public function void()
     {
         $optional = Optional::void();
-        $this->assertTrue($optional->isPresent());
+        $this->assertFalse($optional->isPresent());
         $this->assertTrue($optional->equals(null));
     }
 
@@ -158,16 +158,16 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     public function isPresent()
     {
         $optional_int = Optional::of(0);
-        $this->assertFalse($optional_int->isPresent());
+        $this->assertTrue($optional_int->isPresent());
 
         $optional_bool = Optional::of(false);
-        $this->assertFalse($optional_bool->isPresent());
+        $this->assertTrue($optional_bool->isPresent());
 
         $optional_string = Optional::of('');
-        $this->assertFalse($optional_string->isPresent());
+        $this->assertTrue($optional_string->isPresent());
 
         $empty_optional = Optional::void();
-        $this->assertTrue($empty_optional->isPresent());
+        $this->assertFalse($empty_optional->isPresent());
     }
 
     // }}}

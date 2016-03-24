@@ -112,11 +112,11 @@ class Optional
     /**
      * 存在する値がある場合は true を返し、それ以外の場合は false を返します
      *
-     * @return bool 存在する値がない場合は true、それ以外の場合は false
+     * @return bool 存在する値がある場合はtrueを返し、それ以外の場合はfalseを返します
      */
     public function isPresent()
     {
-        return is_null($this->value);
+        return !is_null($this->value);
     }
 
     /**
