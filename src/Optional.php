@@ -120,6 +120,32 @@ class Optional
     }
 
     /**
+     * 値が存在する場合はクロージャを実行し、それ以外の場合は何もしない
+     *
+     * @param \Closure $func 値が存在する場合に実行する処理
+     *
+     * @return mixed 値が存在する場合はクロージャの実行結果、それ以外の場合は null
+     */
+    public function ifPresent(\Closure $func)
+    {
+        if (!$this->isPresent()) {
+            return null;
+        }
+
+        return $func->call(new class($this->value) {
+            private $value;
+            public function __construct($value)
+            {
+                $this->value = $value;
+            }
+            public function value()
+            {
+                return $this->value;
+            }
+        }, $this->value);
+    }
+
+    /**
      * 値が存在する場合は、その含まれている値を返し、
      * それ以外の場合は、指定されたサプライヤによって作成された例外をスローします
      *
