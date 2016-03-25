@@ -133,6 +133,25 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function equalsTheOptional()
+    {
+        $obj = new \stdClass();
+
+        $optional = Optional::of($obj);
+        $this->assertTrue($optional->equals(Optional::of($obj)));
+        $this->assertFalse($optional->equals(Optional::of(new \stdClass)));
+
+        $optional_int = Optional::of(42);
+        $this->assertTrue($optional_int->equals(Optional::of(42)));
+        $this->assertFalse($optional_int->equals(Optional::of(100)));
+
+        $empty_optional = Optional::void();
+        $this->assertTrue($empty_optional->equals(Optional::void()));
+    }
+
+    /**
+     * @test
+     */
     public function equalsTheClosureValue()
     {
         $optional_int = Optional::of(42);
@@ -179,26 +198,31 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
      */
     public function ifPresent()
     {
+        $optional_string = Optional::of('foo');
+        $optional_string->ifPresent(function ($value) {
+            echo $value;
+        });
+        $this->expectOutputString('foo');
+
         $optional_int = Optional::of(42);
         $result = null;
-        $this->assertEquals(84, $optional_int->ifPresent(function () use (&$result) {
-            $result = ($this->value * 2);
-            return $result;
-        }));
+        $optional_int->ifPresent(function ($value) use (&$result) {
+            $result = ($value * 2);
+        });
         $this->assertEquals(84, $result);
     }
+
     /**
      * @test
      */
     public function ifPresentTheEmptyValue()
     {
         $empty_optional = Optional::void();
-        $result = null;
-        $this->assertNull($empty_optional->ifPresent(function () use (&$result) {
-            $result = 'called';
-            return $result;
-        }));
-        $this->assertNull($result);
+        $empty_optional->ifPresent(function () {
+            echo 'hoge';
+        });
+
+        $this->expectOutputString('');
     }
 
     // }}}

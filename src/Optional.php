@@ -17,6 +17,8 @@ namespace PhpOptional;
  * @package PhpOptional
  *
  * @author IKEDA Youhei <youhey.ikeda@gmail.com>
+ *
+ * @link https://docs.oracle.com/javase/jp/8/docs/api/java/util/Optional.html java.util.Optional
  */
 class Optional
 {
@@ -124,25 +126,15 @@ class Optional
      *
      * @param \Closure $func 値が存在する場合に実行する処理
      *
-     * @return mixed 値が存在する場合はクロージャの実行結果、それ以外の場合は null
+     * @return void
      */
     public function ifPresent(\Closure $func)
     {
         if (!$this->isPresent()) {
-            return null;
+            return;
         }
 
-        return $func->call(new class($this->value) {
-            private $value;
-            public function __construct($value)
-            {
-                $this->value = $value;
-            }
-            public function value()
-            {
-                return $this->value;
-            }
-        }, $this->value);
+        $func->__invoke($this->value);
     }
 
     /**
