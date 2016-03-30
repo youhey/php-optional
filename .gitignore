@@ -10,6 +10,5 @@ desktop.ini
 # PHP
 
 phpunit.xml
-composer.lock
 composer.phar
 /vendor/
