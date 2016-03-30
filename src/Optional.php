@@ -125,7 +125,7 @@ class Optional
             return;
         }
 
-        $func->__invoke($this->value);
+        $func->__invoke($this->get());
     }
 
     /**
@@ -138,7 +138,7 @@ class Optional
      */
     public function get()
     {
-        if (is_null($this->value)) {
+        if (!$this->isPresent()) {
             throw new NoSuchElementException;
         }
 
@@ -154,11 +154,11 @@ class Optional
      */
     public function orElse($other)
     {
-        if (is_null($this->value)) {
+        if (!$this->isPresent()) {
             return $other;
         }
 
-        return $this->value;
+        return $this->get();
     }
 
     /**
@@ -177,7 +177,7 @@ class Optional
         if (!class_exists($exception)) {
             throw new \RuntimeException("'{$exception}' exception does not exist.");
         }
-        if (is_null($this->value)) {
+        if (!$this->isPresent()) {
             $e = new $exception;
             if (!($e instanceof \Throwable)) {
                 throw new \RuntimeException("'{$exception}' not implement Throwable.");
@@ -185,7 +185,7 @@ class Optional
             throw $e;
         }
 
-        return $this->value;
+        return $this->get();
     }
 }
 
