@@ -155,15 +155,19 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     public function equalsTheClosureValue()
     {
         $optional_int = Optional::of(42);
-        $this->assertTrue($optional_int->equals(function () {
+        $this->assertFalse($optional_int->equals(function () {
             return 42;
         }));
 
-        $optional_func = Optional::of(function () {
-            return 42;
-        });
-        $this->assertTrue($optional_func->equals(function () {
-            return 42;
+        $func = function ($x) {
+            return 42 * $x;
+        };
+
+        $optional_func = Optional::of($func);
+        $this->assertTrue($optional_func->equals($func));
+
+        $this->assertFalse($optional_func->equals(function ($x) {
+            return 42 * $x;
         }));
     }
 

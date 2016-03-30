@@ -84,7 +84,7 @@ class Optional
      * 値がこの Optional と等しいかを示します
      *
      * - 両方が null であれば同等
-     * - 他方がクロージャであれば
+     * - 他方がクロージャであれば式を比較
      * - 存在する値が等しければ同等
      *
      * @param mixed $obj 等価性を判定されるオブジェクト
@@ -93,22 +93,13 @@ class Optional
      */
     public function equals($obj)
     {
-        if (is_null($obj)) {
-            return is_null($this->value);
+        $value = $this->orElse(null);
+
+        if ($obj instanceof static) {
+            $obj = $obj->orElse(null);
         }
 
-        if ($obj instanceof self) {
-            return ($this->value === $obj->value);
-        }
-
-        if ($obj instanceof \Closure) {
-            $value = ($this->value instanceof \Closure)
-                ? $this->value->__invoke()
-                : $this->value;
-            return ($value === $obj());
-        }
-
-        return ($this->value === $obj);
+        return ($value === $obj);
     }
 
     /**
