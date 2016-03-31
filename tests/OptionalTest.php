@@ -274,7 +274,6 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
     // }}}
 
-
     // \PhpOptional\Optional #orElseThrow() {{{
 
     /**
@@ -294,6 +293,28 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     {
         $empty_optional = Optional::void();
         $result = $empty_optional->orElseThrow('\\BadFunctionCallException');
+    }
+
+    /**
+     * @test
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage '\ArrayObject' not implement Throwable.
+     */
+    public function orElseThrowTheNotThrowable()
+    {
+        $empty_optional = Optional::void();
+        $result = $empty_optional->orElseThrow('\\ArrayObject');
+    }
+
+    /**
+     * @test
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage 'UnknownException' exception does not exist.
+     */
+    public function orElseThrowTheExceptionDoesNotExists()
+    {
+        $empty_optional = Optional::void();
+        $result = $empty_optional->orElseThrow('UnknownException');
     }
 
     // }}}

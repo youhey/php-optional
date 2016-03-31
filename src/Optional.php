@@ -51,11 +51,7 @@ class Optional
      */
     public static function ofNullable($value)
     {
-        if (is_null($value)) {
-            return static::void();
-        }
-
-        return new static($value);
+        return is_null($value) ? static::void() : static::of($value);
     }
 
     /**
@@ -75,7 +71,7 @@ class Optional
     private $value = null;
 
     /** @param mixed $value Optional の値 */
-    public function __construct($value = null)
+    private function __construct($value = null)
     {
         $this->value = $value;
     }
@@ -93,13 +89,15 @@ class Optional
      */
     public function equals($obj)
     {
-        $value = $this->orElse(null);
-
-        if ($obj instanceof static) {
-            $obj = $obj->orElse(null);
+        if ($this->value === $obj) {
+            return true;
         }
 
-        return ($value === $obj);
+        if ($obj instanceof self) {
+            return ($this->value === $obj->value);
+        }
+
+        return false;
     }
 
     /**
@@ -118,14 +116,15 @@ class Optional
      * @param \Closure $func 値が存在する場合に実行する処理
      *
      * @return void
+     *
+     * @see isPresent()
+     * @see get()
      */
     public function ifPresent(\Closure $func)
     {
-        if (!$this->isPresent()) {
-            return;
+        if ($this->isPresent()) {
+            $func->__invoke($this->get());
         }
-
-        $func->__invoke($this->get());
     }
 
     /**
@@ -135,14 +134,16 @@ class Optional
      * @return mixed 保持する非 null 値
      *
      * @throws NoSuchElementException 存在する値がない場合
+     *
+     * @see isPresent()
      */
     public function get()
     {
-        if (!$this->isPresent()) {
-            throw new NoSuchElementException;
+        if ($this->isPresent()) {
+            return $this->value;
         }
 
-        return $this->value;
+        throw new NoSuchElementException('No value present');
     }
 
     /**
@@ -151,14 +152,13 @@ class Optional
      * @param mixed $other 値が存在しない場合は、これの結果が返される
      *
      * @return mixed 存在すれば保持する非 Null 値、それ以外の場合は $other
+     *
+     * @see isPresent()
+     * @see get()
      */
     public function orElse($other)
     {
-        if (!$this->isPresent()) {
-            return $other;
-        }
-
-        return $this->get();
+        return $this->isPresent() ? $this->get() : $other;
     }
 
     /**
@@ -171,21 +171,25 @@ class Optional
      *
      * @throws $exception 存在する値がない場合
      * @throws \RuntimeException $exception 指定した例外クラスが存在しない場合
+     *
+     * @see isPresent()
+     * @see get()
      */
     public function orElseThrow(string $exception)
     {
+        if ($this->isPresent()) {
+            return $this->get();
+        }
+
         if (!class_exists($exception)) {
             throw new \RuntimeException("'{$exception}' exception does not exist.");
         }
-        if (!$this->isPresent()) {
-            $e = new $exception;
-            if (!($e instanceof \Throwable)) {
-                throw new \RuntimeException("'{$exception}' not implement Throwable.");
-            }
-            throw $e;
-        }
 
-        return $this->get();
+        $e = new $exception;
+        if (!($e instanceof \Throwable)) {
+            throw new \RuntimeException("'{$exception}' not implement Throwable.");
+        }
+        throw $e;
     }
 }
 
