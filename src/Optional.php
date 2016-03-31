@@ -54,6 +54,9 @@ class Optional
         return is_null($value) ? static::void() : static::of($value);
     }
 
+    /** @var static empty value instance */
+    protected static $empty = null;
+
     /**
      * 空の Optional インスタンスを返します
      *
@@ -61,10 +64,16 @@ class Optional
      * （たぶん予約語のキーワードにあるから？）近しい単語に……</p>
      *
      * @return Optional 空の Optional
+     *
+     * @see $empty
      */
     public static function void()
     {
-        return new static();
+        if (is_null(static::$empty)) {
+            static::$empty = new static();
+        }
+
+        return static::$empty;
     }
 
     /** @var mixed $value Optional の値 */
