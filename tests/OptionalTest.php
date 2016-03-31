@@ -13,6 +13,8 @@ namespace PhpOptional;
  * @package PhpOptional
  *
  * @author IKEDA Youhei <youhey.ikeda@gmail.com>
+ *
+ * @SuppressWarnings(PHPMD)
  */
 class OptionalTest extends \PHPUnit_Framework_TestCase
 {
@@ -292,7 +294,7 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     public function orElseThrowTheEmptyValue()
     {
         $empty_optional = Optional::void();
-        $result = $empty_optional->orElseThrow('\\BadFunctionCallException');
+        $empty_optional->orElseThrow('\\BadFunctionCallException');
     }
 
     /**
@@ -303,7 +305,7 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     public function orElseThrowTheNotThrowable()
     {
         $empty_optional = Optional::void();
-        $result = $empty_optional->orElseThrow('\\ArrayObject');
+        $empty_optional->orElseThrow('\\ArrayObject');
     }
 
     /**
@@ -314,7 +316,7 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     public function orElseThrowTheExceptionDoesNotExists()
     {
         $empty_optional = Optional::void();
-        $result = $empty_optional->orElseThrow('UnknownException');
+        $empty_optional->orElseThrow('UnknownException');
     }
 
     // }}}
