@@ -66,7 +66,7 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
 
     // }}}
 
-    // \PhpOptional\Optional::void() {{{
+    // \PhpOptional\Optional #void() {{{
 
     /**
      * @test
@@ -76,6 +76,16 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
         $optional = Optional::void();
         $this->assertFalse($optional->isPresent());
         $this->assertTrue($optional->equals(null));
+    }
+
+    /**
+     * @test
+     */
+    public function voidIsSingleton()
+    {
+        $optional1 = Optional::void();
+        $optional2 = Optional::void();
+        $this->assertSame($optional1, $optional2);
     }
 
     // }}}
@@ -255,7 +265,7 @@ class OptionalTest extends \PHPUnit_Framework_TestCase
     public function getTheNullValue()
     {
         $empty_optional = Optional::void();
-        $result = $empty_optional->get();
+        $empty_optional->get();
     }
 
     // }}}

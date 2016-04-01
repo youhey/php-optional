@@ -8,5 +8,7 @@
  */
 
 require_once 'src/Optional.php';
+require_once 'src/OptionalFloat.php';
+require_once 'src/OptionalInt.php';
 require_once 'src/NullPointerException.php';
 require_once 'src/NoSuchElementException.php';

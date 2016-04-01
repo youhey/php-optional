@@ -7,81 +7,72 @@
  * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 
+declare(strict_types=1);
+
 namespace PhpOptional;
 
 /**
- * null 以外の値が含まれている場合も含まれていない場合もあるコンテナ・オブジェクト
+ * @package PhpOptional
  *
- * <p>JAVA8 の java.util.Optional を見よう見まねでそれっぽく真似してみました。</p>
+ * @author IKEDA Youhei <youhey.ikeda@gmail.com>
+ */
+/**
+ * float 値が含まれている場合も含まれていない場合もあるコンテナ・オブジェクト
  *
  * @package PhpOptional
  *
  * @author IKEDA Youhei <youhey.ikeda@gmail.com>
  *
- * @link https://docs.oracle.com/javase/jp/8/docs/api/java/util/Optional.html java.util.Optional
+ * @link https://docs.oracle.com/javase/jp/8/docs/api/java/util/OptionalDouble.html java.util.OptionalDouble
+ * @link https://docs.oracle.com/javase/jp/8/docs/api/java/util/OptionalLong.html java.util.OptionalLong
  */
-class Optional
+class OptionalFloat
 {
     /**
-     * 非 null 値を含むOptionalを返します
+     * 指定された値を含む OptionalFloat インスタンスを返します
      *
-     * @param mixed $value 非 null の存在する値
+     * @param float $value 存在する値
      *
-     * @return Optional 存在する値でのOptional
-     *
-     * @throws NullPointerException value が null の場合
+     * @return OptionalFloat 値が存在する OptionalFloat
      */
-    public static function of($value): Optional
+    public static function of(float $value): OptionalFloat
     {
-        if (is_null($value)) {
-            throw new NullPointerException;
-        }
-
         return new static($value);
     }
 
-    /**
-     * 指定された値がnullでない場合はその値を記述するOptionalを返し、
-     * それ以外の場合は空のOptionalを返します
-     *
-     * @param mixed $value null を含む値
-     *
-     * @return Optional 指定された値が null でなければ存在する値での Optional
-     *                  それ以外の場合は空の Optional
-     */
-    public static function ofNullable($value): Optional
-    {
-        return is_null($value) ? static::void() : static::of($value);
-    }
-
-    /** @var Optional empty value instance */
-    protected static $empty = null;
+    /** @var OptionalFloat empty value instance */
+    private static $empty = null;
 
     /**
-     * 空の Optional インスタンスを返します
+     * 空の OptionalFloat インスタンスを返します
      *
      * <p>メソッド名 #empty だと phpcs に怒られるので、
      * （たぶん予約語のキーワードにあるから？）近しい単語に……</p>
      *
-     * @return Optional 空の Optional
+     * @return OptionalFloat 空の OptionalFloat
      *
      * @see $empty
      */
-    public static function void(): Optional
+    public static function void(): OptionalFloat
     {
-        if (is_null(static::$empty)) {
-            static::$empty = new static();
+        if (is_null(self::$empty)) {
+            self::$empty = new static(NAN);
+            self::$empty->isPresent = false;
         }
 
-        return static::$empty;
+        return self::$empty;
     }
 
-    /** @var mixed Optional の値 */
-    private $value = null;
+    /** @var bool 存在する値があるか？ */
+    private $isPresent;
 
-    /** @param mixed $value Optional の値 */
-    private function __construct($value = null)
+    /** @var number Optional の値 */
+    private $value;
+
+    /** @param float $value OptionalFloat の値 */
+    private function __construct(float $value)
     {
+        $this->isPresent = true;
         $this->value = $value;
     }
 
@@ -96,17 +87,15 @@ class Optional
      *
      * @return bool オブジェクトと値が等しければ true、それ以外は false
      */
-    public function equals($obj): bool
+    public function equals($obj)
     {
-        if ($this->value === $obj) {
-            return true;
-        }
-
         if ($obj instanceof self) {
-            return ($this->value === $obj->value);
+            return ($this->isPresent() && $obj->isPresent()) ?
+                ($this->value === $obj->value) :
+                ($this->isPresent() === $obj->isPresent());
         }
 
-        return false;
+        return ($this->isPresent() && ($this->value === $obj));
     }
 
     /**
@@ -116,7 +105,7 @@ class Optional
      */
     public function isPresent(): bool
     {
-        return !is_null($this->value);
+        return $this->isPresent;
     }
 
     /**
@@ -137,16 +126,16 @@ class Optional
     }
 
     /**
-     * 値が存在する場合は、その含まれている値を返し、
+     * 値が存在する場合は、その値を返し、
      * それ以外の場合は、NoSuchElementExceptionをスローします
      *
-     * @return mixed 保持する非 null 値
+     * @return float 保持する値
      *
      * @throws NoSuchElementException 存在する値がない場合
      *
      * @see isPresent()
      */
-    public function get()
+    public function get(): float
     {
         if ($this->isPresent()) {
             return $this->value;
@@ -158,14 +147,14 @@ class Optional
     /**
      * 存在する場合は値を返し、それ以外の場合は $other を返します
      *
-     * @param mixed $other 値が存在しない場合は、この値が返される
+     * @param float $other 値が存在しない場合は、この値が返される
      *
-     * @return mixed 存在すれば保持する非 Null 値、それ以外の場合は $other
+     * @return float 存在すれば保持する値、それ以外の場合は $other
      *
      * @see isPresent()
      * @see get()
      */
-    public function orElse($other)
+    public function orElse(float $other): float
     {
         return $this->isPresent() ? $this->get() : $other;
     }
@@ -176,7 +165,7 @@ class Optional
      *
      * @param string $exception 存在する値がない場合にスローするクラス名
      *
-     * @return mixed 保持する非 null 値
+     * @return float 保持する値
      *
      * @throws $exception 存在する値がない場合
      * @throws \RuntimeException $exception 指定した例外クラスが存在しない場合
@@ -184,7 +173,7 @@ class Optional
      * @see isPresent()
      * @see get()
      */
-    public function orElseThrow(string $exception)
+    public function orElseThrow(string $exception): float
     {
         if ($this->isPresent()) {
             return $this->get();
