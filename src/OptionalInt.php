@@ -7,106 +7,91 @@
  * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 
+declare(strict_types=1);
+
 namespace PhpOptional;
 
 /**
- * null 以外の値が含まれている場合も含まれていない場合もあるコンテナ・オブジェクト
+ * @package PhpOptional
  *
- * <p>JAVA8 の java.util.Optional を見よう見まねでそれっぽく真似してみました。</p>
+ * @author IKEDA Youhei <youhey.ikeda@gmail.com>
+ */
+/**
+ * int 値が含まれている場合も含まれていない場合もあるコンテナ・オブジェクト
  *
  * @package PhpOptional
  *
  * @author IKEDA Youhei <youhey.ikeda@gmail.com>
  *
- * @link https://docs.oracle.com/javase/jp/8/docs/api/java/util/Optional.html java.util.Optional
+ * @link https://docs.oracle.com/javase/jp/8/docs/api/java/util/OptionalDouble.html java.util.OptionalDouble
+ * @link https://docs.oracle.com/javase/jp/8/docs/api/java/util/OptionalLong.html java.util.OptionalLong
  */
-class Optional
+class OptionalInt
 {
     /**
-     * 非 null 値を含むOptionalを返します
+     * 指定された値を含む OptionalInt インスタンスを返します
      *
-     * @param mixed $value 非 null の存在する値
+     * @param int $value 存在する値
      *
-     * @return Optional 存在する値でのOptional
-     *
-     * @throws NullPointerException value が null の場合
+     * @return OptionalInt 値が存在する OptionalInt
      */
-    public static function of($value): Optional
+    public static function of(int $value): OptionalInt
     {
-        if (is_null($value)) {
-            throw new NullPointerException;
-        }
-
         return new static($value);
     }
 
-    /**
-     * 指定された値がnullでない場合はその値を記述するOptionalを返し、
-     * それ以外の場合は空のOptionalを返します
-     *
-     * @param mixed $value null を含む値
-     *
-     * @return Optional 指定された値が null でなければ存在する値での Optional
-     *                  それ以外の場合は空の Optional
-     */
-    public static function ofNullable($value): Optional
-    {
-        return is_null($value) ? static::void() : static::of($value);
-    }
-
-    /** @var Optional empty value instance */
-    protected static $empty = null;
+    /** @var OptionalInt empty value instance */
+    private static $empty = null;
 
     /**
-     * 空の Optional インスタンスを返します
+     * 空の OptionalInt インスタンスを返します
      *
      * <p>メソッド名 #empty だと phpcs に怒られるので、
      * （たぶん予約語のキーワードにあるから？）近しい単語に……</p>
      *
-     * @return Optional 空の Optional
+     * @return OptionalInt 空の OptionalInt
      *
      * @see $empty
      */
-    public static function void(): Optional
+    public static function void(): OptionalInt
     {
-        if (is_null(static::$empty)) {
-            static::$empty = new static();
+        if (is_null(self::$empty)) {
+            self::$empty = new static(0);
+            self::$empty->isPresent = false;
         }
 
-        return static::$empty;
+        return self::$empty;
     }
 
-    /** @var mixed Optional の値 */
-    private $value = null;
+    /** @var bool 存在する値があるか？ */
+    private $isPresent;
 
-    /** @param mixed $value Optional の値 */
-    private function __construct($value = null)
+    /** @var number Optional の値 */
+    private $value;
+
+    /** @param int $value OptionalInt の値 */
+    private function __construct(int $value)
     {
+        $this->isPresent = true;
         $this->value = $value;
     }
 
     /**
      * 値がこの Optional と等しいかを示します
      *
-     * - 両方が null であれば同等
-     * - 他方がクロージャであれば式を比較
-     * - 存在する値が等しければ同等
-     *
      * @param mixed $obj 等価性を判定されるオブジェクト
      *
      * @return bool オブジェクトと値が等しければ true、それ以外は false
      */
-    public function equals($obj): bool
+    public function equals($obj)
     {
-        if ($this->value === $obj) {
-            return true;
-        }
-
         if ($obj instanceof self) {
-            return ($this->value === $obj->value);
+            return ($this->isPresent() && $obj->isPresent()) ?
+                ($this->value === $obj->value) :
+                ($this->isPresent() === $obj->isPresent());
         }
 
-        return false;
+        return ($this->isPresent() && ($this->value === $obj));
     }
 
     /**
@@ -116,7 +101,7 @@ class Optional
      */
     public function isPresent(): bool
     {
-        return !is_null($this->value);
+        return $this->isPresent;
     }
 
     /**
@@ -137,16 +122,16 @@ class Optional
     }
 
     /**
-     * 値が存在する場合は、その含まれている値を返し、
+     * 値が存在する場合は、その値を返し、
      * それ以外の場合は、NoSuchElementExceptionをスローします
      *
-     * @return mixed 保持する非 null 値
+     * @return int 保持する値
      *
      * @throws NoSuchElementException 存在する値がない場合
      *
      * @see isPresent()
      */
-    public function get()
+    public function get(): int
     {
         if ($this->isPresent()) {
             return $this->value;
@@ -158,14 +143,14 @@ class Optional
     /**
      * 存在する場合は値を返し、それ以外の場合は $other を返します
      *
-     * @param mixed $other 値が存在しない場合は、この値が返される
+     * @param int $other 値が存在しない場合は、この値が返される
      *
-     * @return mixed 存在すれば保持する非 Null 値、それ以外の場合は $other
+     * @return int 存在すれば保持する値、それ以外の場合は $other
      *
      * @see isPresent()
      * @see get()
      */
-    public function orElse($other)
+    public function orElse(int $other): int
     {
         return $this->isPresent() ? $this->get() : $other;
     }
@@ -176,7 +161,7 @@ class Optional
      *
      * @param string $exception 存在する値がない場合にスローするクラス名
      *
-     * @return mixed 保持する非 null 値
+     * @return int 保持する値
      *
      * @throws $exception 存在する値がない場合
      * @throws \RuntimeException $exception 指定した例外クラスが存在しない場合
@@ -184,7 +169,7 @@ class Optional
      * @see isPresent()
      * @see get()
      */
-    public function orElseThrow(string $exception)
+    public function orElseThrow(string $exception): int
     {
         if ($this->isPresent()) {
             return $this->get();
