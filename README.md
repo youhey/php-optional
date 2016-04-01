@@ -15,7 +15,7 @@ Optional::ofNullable(jpTax())->ifPresent(function ($tax) use (&$price) {
     $price = $price + $price * $tax;
 });
 
-Optional::ofNullable(inputValue())->ifPresent(function () {
-    register($this->value, time());
+Optional::ofNullable(inputValue())->ifPresent(function ($input) {
+    register($input, time());
 });
 ```
